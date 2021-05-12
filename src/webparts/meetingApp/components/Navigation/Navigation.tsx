@@ -15,6 +15,12 @@ import Administration from "../Administration/Administration";
 import AdministrationSetting from "../Administration/Setting/AdministrationSetting";
 import Calendar from "../Calendar/Calendar";
 import Agenda from "../Agenda/Agenda";
+import HomePage from "../Home/Home";
+
+//UI Themes
+import { Customizer } from 'office-ui-fabric-react';
+import { FluentCustomizations } from '@uifabric/fluent-theme';
+import { NeutralColors } from '@fluentui/theme';
 
 //const UserContext = React.createContext([]);
 const navStyles: Partial<INavStyles> = {
@@ -38,23 +44,23 @@ const navLinkGroups: INavLinkGroup[] = [
         isExpanded: true,
         key: "homeKey",
       },
-      {
-        name: "Start Meeting",
-        url: "#/",
-        isExpanded: true,
-        key: "appointementStartKey",
-      },
+      // {
+      //   name: "Start Meeting",
+      //   url: "#/",
+      //   isExpanded: true,
+      //   key: "appointementStartKey",
+      // },
       {
         name: "Administration",
         url: "#/",
         key: "adminKey",
         isExpanded: false,
         links: [
-          {
-            name: "Setting",
-            url: "#/",
-            key: "adminSettingKey",
-          },
+          // {
+          //   name: "Setting",
+          //   url: "#/",
+          //   key: "adminSettingKey",
+          // },
           {
             name: "Manage Meeting",
             url: "#/",
@@ -64,13 +70,13 @@ const navLinkGroups: INavLinkGroup[] = [
             name: "Agenda",
             url: "#/",
             key: "adminAgendaKey",
-            links: [
-              {
-                name: "Add Agenda",
-                url: "#/",
-                key: "adminAddAgendaKey",
-              },
-            ],
+            // links: [
+            //   {
+            //     name: "Add Agenda",
+            //     url: "#/",
+            //     key: "adminAddAgendaKey",
+            //   },
+            // ],
           },
         ],
       },
@@ -119,6 +125,7 @@ function Navigation(props: INavigationProps) {
     } else if (showContent === "adminManageMeeting") {
       return (
         <div className={styles.NavigationContent}>
+           <Customizer {...FluentCustomizations}>
           <Calendar
             context={props.context}
             updateProperty={props.updateProperty}
@@ -128,14 +135,20 @@ function Navigation(props: INavigationProps) {
             list={props.list}
             eventStartDate={props.eventStartDate}
             eventEndDate={props.eventEndDate}
-          ></Calendar>
+          ></Calendar></Customizer>
         </div>
       );
     } else if (showContent === "home") {
-      return <div>Nothing</div>;
+      return (
+        <div style={{ backgroundColor: NeutralColors.gray60 }}>
+      <Customizer {...FluentCustomizations}>
+      <HomePage title="MeetingApp" ></HomePage></Customizer>
+        </div>
+);
     } else if (showContent === "adminAgendaKey") {
       return (
         <div className={styles.NavigationContent}>
+           <Customizer {...FluentCustomizations}>
           <Agenda
             usePaging={true}
             context={props.context}
@@ -143,7 +156,7 @@ function Navigation(props: INavigationProps) {
             eventStartDate={props.eventStartDate}
             eventEndDate={props.eventEndDate}
             list={props.list}
-          ></Agenda>
+          ></Agenda></Customizer>
         </div>
       );
     }
@@ -152,12 +165,13 @@ function Navigation(props: INavigationProps) {
   return (
     <div>
       <div className={styles.NavigationMain}>
+      <Customizer {...FluentCustomizations}>
         <Nav
           onLinkClick={_onLinkClick}
           ariaLabel="Nav basic example"
           styles={navStyles}
           groups={navLinkGroups}
-        />
+        /></Customizer>
       </div>
       {renderComponent()}
     </div>

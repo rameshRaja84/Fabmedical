@@ -46,12 +46,6 @@ public getItems(){
         });
       });
   }
-  // else{
-  //   this.setState({
-  //     items:[]
-  // });
-
-//}
 }
 
 
@@ -60,9 +54,6 @@ public getItems(){
     //this.getItems();
 
     const viewFields: IViewField[] = [
-
-
-
       {
         name: 'Title',
         displayName: 'Title',
@@ -103,27 +94,6 @@ public getItems(){
         sorting: true,
         maxWidth: 80
       }
-      // ,
-      // {
-      //   name: 'MeetingAppContent',
-      //   displayName: "Content",
-      //   sorting: false,
-      //   maxWidth: 80,
-      //   render: (item: any) => {
-      //     const content = item['MeetingAppContent'];
-      //       return <div>{content}</div>
-      //   }
-      // }
-      // ,
-      // {
-      //   name: 'Email',
-      //   displayName: "Email Address",
-      //   sorting: true,
-      //   maxWidth: 100,
-      //   render: (item: any) => {
-      //     return <a href={"mailto:" + item['Email']}>{item['Email']}</a>;
-      //   }
-      // }
     ];
 
     const groupByFields: IGrouping[] = [

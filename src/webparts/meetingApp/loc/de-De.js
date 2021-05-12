@@ -147,6 +147,13 @@ define([], function() {
     NextLabel: "Nächste",
     AllDayDateFormat: "dddd, MMMM Do YYYY",
     LocalizedTimeFormat: "llll",
-    AgendaOverViewText: "Bitte selektieren Sie einen Termin"
+    AgendaOverViewText: "Bitte selektieren Sie einen Termin",
+    Nav_agenda:"Agenda",
+    Nav_Calender:"Kalender",
+    Nav_Setting:"Einstellungen",
+    Nav_Administration:"Administration",
+
+    Agenda_Detail_BackBtn:"Zurück zur Übersicht",
+    Agenda_Detail_AddNewBtn:"Neuer Eintrag"
   }
 });

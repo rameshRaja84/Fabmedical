@@ -3,7 +3,7 @@
   "solution": {
     "name": "MeetingApp-V2",
     "id": "291f6271-3c75-48c7-8dbf-9075ee1443b8",
-    "version": "1.0.0.23",
+    "version": "1.0.0.25",
     "includeClientSideAssets": true,
     "isDomainIsolated": false
   },

@@ -147,6 +147,14 @@ declare interface IMeetingAppWebPartStrings {
   AllDayDateFormat: string;
   LocalizedTimeFormat: string;
   AgendaOverViewText: string;
+  Nav_agenda:string;
+  Nav_Calender:string;
+  Nav_Setting:string;
+  Nav_Administration:string;
+
+  Agenda_Detail_BackBtn:string;
+  Agenda_Detail_AddNewBtn:string;
+
 }
 
 declare module 'MeetingAppWebPartStrings' {
