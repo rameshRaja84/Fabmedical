@@ -7,8 +7,7 @@ import { IUserPermissions } from "../../../../services/IUserPermissions";
 import spservices from "../../../../services/spservices";
 import * as moment from "moment";
 import AgendaList from "./AgendaList/AgendaList";
-//import { PrimaryButton, DefaultButton } from "@fluentui/react/lib/Button";
-import { TextField } from '@fluentui/react/lib/TextField';
+import { PrimaryButton, DefaultButton } from "@fluentui/react/lib/Button";
 import {
   CommandBar,
   ICommandBarItemProps,
@@ -30,8 +29,10 @@ import CompactLayout from "../../HelperComponents/compactLayout/CompactLayout";
 import { Paging } from "../../HelperComponents/paging";
 import { Panel, PanelType } from "@fluentui/react/lib/Panel";
 import { SharedColors } from "@fluentui/theme";
-import PanelDialog from "./Dialog/PanelDialog"
-
+import PanelDialog from "./Dialog/PanelDialog";
+import { TextField, MaskedTextField } from '@fluentui/react/lib/TextField';
+import { Stack, IStackProps, IStackStyles } from '@fluentui/react/lib/Stack';
+import { Dropdown, DropdownMenuItemType, IDropdownStyles, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 
 const tileStyle: IDocumentCardStyles = {
   root: {
@@ -43,6 +44,44 @@ const tileStyle: IDocumentCardStyles = {
 };
 
 var _items: ICommandBarItemProps[] = null;
+const stackTokens = { childrenGap: 50 };
+const stackStyles: Partial<IStackStyles> = { root: { width: 650 } };
+const columnProps: Partial<IStackProps> = {
+  tokens: { childrenGap: 15 },
+  styles: { root: { width: 300 } },
+};
+
+const dropdownStyles: Partial<IDropdownStyles> = {
+  dropdown: { width: 300 },
+};
+
+const rankOptions: IDropdownOption[] = [
+  { key: '1', text: '1' },
+  { key: '2', text: '2' },
+  { key: '3', text: '3' },
+  { key: '4', text: '4' },
+  { key: '5', text: '5'},
+  { key: '6', text: '6' },
+  { key: '7', text: '7' },
+  { key: '8', text: '8' },
+  { key: '9', text: '9' },
+  { key: '10', text: '10' },
+  { key: '11', text: '11' },
+  { key: '12', text: '12' },
+  { key: '13', text: '13' },
+  { key: '14', text: '14' },
+  { key: '15', text: '15' },
+];
+
+const durationOptions: IDropdownOption[] = [
+  { key: '15', text: '15' },
+  { key: '30', text: '30' },
+  { key: '45', text: '45' },
+  { key: '60', text: '60' },
+];
+
+
+
 
 // const _overflowItems: ICommandBarItemProps[] = [
 //   { key: 'move', text: 'Move to...', onClick: () => console.log('Move to'), iconProps: { iconName: 'MoveToFolder' } },
@@ -71,6 +110,7 @@ export default class Agenda extends React.Component<
     this.state = {
       showDialog: false,
       eventData: [],
+      addAgenda:null,
       selectedEvent: undefined,
       isloading: true,
       hasError: false,
@@ -83,13 +123,20 @@ export default class Agenda extends React.Component<
       panelDescription: "Some Panel",
       panelIsOpen: false,
       panelType: PanelType.medium,
-      agendaEditMode:"none"
+      agendaEditMode:"none",
+      content : "",
+      duration : "15",
+      rank : "1",
+      title : "",
+      topic : ""
     };
 
     this.initializeTopCommandBar();
     this.setState({ isloading: true });
     this.loadEvents();
     this.setState({ isloading: false });
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   /**
@@ -149,6 +196,56 @@ export default class Agenda extends React.Component<
     ];
   }
 
+
+
+
+  private handleInputChange(event) {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    //const name = target.name;
+    const id = target.id;
+    //console.log("Names is " + name);
+    console.log("ID is " + id);
+
+    if(id == "title"){
+      this.setState({
+        title: value
+      });
+    }
+    else if (id == "topic"){
+      this.setState({
+        topic: value
+      });
+    }
+
+    else if (id == "duration"){
+      this.setState({
+        duration: value
+      });
+    }
+
+    else if (id == "rank"){
+      this.setState({
+        rank: value
+      });
+    }
+  }
+
+
+  private async handleSubmit(event) {
+
+    this.state.addAgenda.Title = this.state.title;
+    this.state.addAgenda.MeetingAppDuration = this.state.duration;
+    this.state.addAgenda.MeetingAppTopic = this.state.topic;
+    this.state.addAgenda.MeetingAppRank = this.state.rank;
+    this.state.addAgenda.MeetingAppEventID = this.state.selectedEventID;
+
+
+    await this.spService.addAgenda(this.props.agendaSiteUrl, this.props.list, this.state.addAgenda);
+    event.preventDefault();
+  }
+
+
   public render(): React.ReactElement<ICompactProps> {
     //alert("rendering " + this.state.showAgendaDetails);
     let pagedItems: any[] = this.state.eventData;
@@ -170,6 +267,60 @@ export default class Agenda extends React.Component<
     }
 
     if (this.state.showAgendaDetails) {
+
+      let panel;
+      // panelIsOpen: true,
+      // agendaEditMode:"newAgenda"
+      if(this.state.panelIsOpen == true){
+        if(this.state.agendaEditMode == "newAgenda"){
+          panel =
+          <Panel
+            isOpen={this.state.panelIsOpen}
+            onDismiss={() => this._onDismissPanel()}
+            type={this.state.panelType}
+            customWidth={
+              this.state.panelType === PanelType.custom ||
+              this.state.panelType === PanelType.customNear
+                ? "888px"
+                : undefined
+            }
+            closeButtonAriaLabel="Close"
+            headerText="Add Agenda" >
+              <Stack horizontal tokens={stackTokens} styles={stackStyles}>
+
+              <Stack {...columnProps}>
+                <TextField name="title" label="Title" id="title" required  value={this.state.title} onChange={this.handleInputChange}/>
+                <Dropdown
+                id="rank"
+                placeholder="Please select"
+                label="Rank"
+                options={rankOptions}
+                styles={dropdownStyles}
+                selectedKey={this.state.rank} onChange={this.handleInputChange}
+              />
+                <Dropdown
+                id="duration"
+                placeholder="Please select"
+                label="Duration"
+                options={durationOptions}
+                styles={dropdownStyles}
+                selectedKey={this.state.rank} onChange={this.handleInputChange}
+              />
+                <TextField name="Topic" label="Topic" id="topic" required value={this.state.topic}  onChange={this.handleInputChange}/>
+              </Stack>
+
+              </Stack>
+              <Stack horizontal tokens={stackTokens} styles={stackStyles}>
+              <DefaultButton text="Save" onClick={() => this.handleSubmit} allowDisabledFocus  style={{ backgroundColor: SharedColors.green10 }} />
+              <DefaultButton text="Cancel" onClick={() => this._onDismissPanel()} allowDisabledFocus  style={{ backgroundColor: SharedColors.red10 }} />
+              </Stack>
+          </Panel>;
+        }
+
+      }
+
+
+
       return (
         <div>
           {/* <DefaultButton text={strings.Agenda_Detail_BackBtn} onClick={() => this._onBackToOverView()} allowDisabledFocus  style={{ backgroundColor: SharedColors.blue10 }} />
@@ -188,37 +339,8 @@ export default class Agenda extends React.Component<
               list="MApp-Agenda"
             />
           </div>
+           {panel}
 
-          <PanelDialog header="Add Agenda" editMode="addAgenda" panelType={PanelType.medium} eventID={this.state.selectedEventID} panelIsOpen={this.state.panelIsOpen} ></PanelDialog>
-
-          {/* <Panel
-            isOpen={this.state.panelIsOpen}
-            onDismiss={() => this._onDismissPanel()}
-            type={this.state.panelType}
-            customWidth={
-              this.state.panelType === PanelType.custom ||
-              this.state.panelType === PanelType.customNear
-                ? "888px"
-                : undefined
-            }
-            closeButtonAriaLabel="Close"
-            headerText="Agenda" >
-            if()
-            <p>
-              This is <strong>{this.state.panelDescription}</strong> panel
-              {this.state.panelType === PanelType.smallFixedFar
-                ? " (the default size)"
-                : ""}
-              .
-            </p>
-            <p>
-              Select this size using{" "}
-              <code>{`type={PanelType.${
-                PanelType[this.state.panelType]
-              }}`}</code>
-              .
-            </p>
-          </Panel> */}
         </div>
       );
     } else {
@@ -231,6 +353,11 @@ export default class Agenda extends React.Component<
       );
     }
   }
+
+
+  public passedFunction = () =>{
+  console.log("sucessfully passed");
+}
 
   private displayOverView(
     pagedItems,
@@ -283,11 +410,12 @@ export default class Agenda extends React.Component<
     });
   }
 
+
   private _onPageUpdate = (pageNumber: number): void => {
     this.setState({
       currentPage: pageNumber,
     });
-  };
+  }
 
   private _onMeetingSelected = (id: number): void => {
     //alert("selected meeting id is : " + id);
@@ -296,7 +424,7 @@ export default class Agenda extends React.Component<
       selectedEventID: id,
       showAgendaDetails: true,
     });
-  };
+  }
 
   private _onRenderGridItem = (item: any, _index: number): JSX.Element => {
 
@@ -328,5 +456,7 @@ export default class Agenda extends React.Component<
         </DocumentCard>
       </div>
     );
-  };
+  }
+
+
 }

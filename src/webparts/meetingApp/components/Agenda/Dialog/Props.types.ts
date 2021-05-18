@@ -1,3 +1,4 @@
+import { PropertyPaneFieldType } from "@microsoft/sp-property-pane";
 import { PanelType } from "office-ui-fabric-react";
 
 export interface IPanelDialogProps {
@@ -6,6 +7,7 @@ export interface IPanelDialogProps {
   panelType: PanelType;
   eventID:number;
   panelIsOpen:boolean;
+  ClickHandler: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export interface IPanelDialogState {

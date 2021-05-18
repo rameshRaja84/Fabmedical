@@ -708,6 +708,27 @@ console.log("SP Service call");
 
   }
 
+
+  public async addAgenda(siteUrl: string, listName: string, newAgenda: IAgenda) {
+    let results = null;
+    try {
+      const web = Web(siteUrl);
+
+      results = await web.lists.getByTitle(listName).items.add({
+        Title: newAgenda.MeetingAppTopic,
+        Rank: newAgenda.MeetingAppRank,
+        Duration: newAgenda.MeetingAppDuration,
+        Topic: newAgenda.MeetingAppTopic,
+        Content: newAgenda.MeetingAppContent,
+        EventID: newAgenda.ID,
+      });
+    }
+    catch (error) {
+      return Promise.reject(error);
+    }
+    return results;
+  }
+
   /**
    *
    * @private

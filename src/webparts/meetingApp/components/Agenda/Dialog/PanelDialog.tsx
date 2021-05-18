@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IPanelDialogProps } from './Props.types';
-import {IPanelDialogState} from './Props.types'
+import {IPanelDialogState} from './Props.types';
 import * as strings from 'MeetingAppWebPartStrings';
 import {getNativeProps, Panel, PanelType } from "office-ui-fabric-react";
 import { TextField, MaskedTextField } from '@fluentui/react/lib/TextField';
@@ -44,6 +44,7 @@ const durationOptions: IDropdownOption[] = [
 ];
 
 
+
 export default class PanelDialog extends React.Component<
 IPanelDialogProps,
 IPanelDialogState
@@ -53,33 +54,68 @@ IPanelDialogState
     this.state = {
       content:"",
       duration:15,
-      panelIsOpen:this.props.panelIsOpen,
+      panelIsOpen: false,
       panelType:PanelType.medium,
       rank:1,
       title:"",
       topic:""
     };
-
   }
 
-   handleChange(event) {
-
-    ({value: event.target.value});
-  }
-
-  private _onDismissPanel() {
+   private handleChange_title(event) {
     this.setState({
-      panelIsOpen: false,
+      title:event.target.value
     });
   }
 
-  public render(): React.ReactElement<IPanelDialogProps> {
+
+  private handleChange_rank(event) {
+    this.setState({
+      rank:event.target.value
+    });
+  }
+
+  private handleChange_duration(event) {
+    this.setState({
+      duration:event.target.value
+    });
+  }
+
+  private handleChange_topic(event) {
+    this.setState({
+      topic:event.target.value
+    });
+  }
+
+
+
+
+  // private _onDismissPanel() {
+  //   this.props.func_OpenPanel();
+
+  //   // this.setState({
+  //   //   panelIsOpen: false
+  //   // });
+  // }
+
+  public componentDidMount(){
+    // if(this.props.panelIsOpen){
+    //   this.setState({
+    //    panelIsOpen:true
+    //   });
+    // }
+  }
+
+  public render() {
+
+
+   //alert("Calling with "+ this.props.editMode + " and panelisopenState is:" + this.state.panelIsOpen );
   if(this.props.editMode =="addAgenda"){
     return (
       <div>
       <Panel
       isOpen={this.state.panelIsOpen}
-      onDismiss={() => this._onDismissPanel()}
+      onDismiss={() => this.props.ClickHandler}
       type={this.state.panelType}
       customWidth={
         this.state.panelType === PanelType.custom ||
@@ -89,17 +125,17 @@ IPanelDialogState
       }
       closeButtonAriaLabel="Close"
       headerText={this.props.header}>
-     <p>
+     <p> Test
      <Stack horizontal tokens={stackTokens} styles={stackStyles}>
       <Stack {...columnProps}>
-        <TextField label="Title" id="title" required  value={this.state.title} onChange={this.handleChange}/>
+        <TextField label="Title" id="title" required  value={this.state.title} onChange={this.handleChange_title}/>
         <Dropdown
         id="rank"
         placeholder="Please select"
         label="Rank"
         options={rankOptions}
         styles={dropdownStyles}
-        selectedKey={this.state.rank} onChange={this.handleChange}
+        selectedKey={this.state.rank} onChange={this.handleChange_rank}
       />
          <Dropdown
         id="duration"
@@ -107,9 +143,9 @@ IPanelDialogState
         label="Duration"
         options={durationOptions}
         styles={dropdownStyles}
-        selectedKey={this.state.rank} onChange={this.handleChange}
+        selectedKey={this.state.rank} onChange={this.handleChange_duration}
       />
-        <TextField label="Topic" id="topic" required value={this.state.title} onChange={this.handleChange}/>
+        <TextField label="Topic" id="topic" required value={this.state.topic} onChange={this.handleChange_topic}/>
       </Stack>
       </Stack>
 
@@ -122,7 +158,7 @@ IPanelDialogState
       <div>
       <Panel
       isOpen={this.state.panelIsOpen}
-      onDismiss={() => this._onDismissPanel()}
+      onDismiss={() => this.props.ClickHandler}
       type={this.state.panelType}
       customWidth={
         this.state.panelType === PanelType.custom ||

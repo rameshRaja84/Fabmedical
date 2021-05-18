@@ -2,6 +2,7 @@ import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { IDateTimeFieldValue } from '@pnp/spfx-property-controls/lib/PropertyFieldDateTimePicker';
 import { PanelType } from "office-ui-fabric-react";
 import { IEventAgenda } from "../../../../services/IEventAgenda";
+import { IAgenda } from "../../../../services/IAgenda";
 
 export interface ICompactProps {
   usePaging: boolean;
@@ -20,6 +21,7 @@ export interface ICompactState {
   showDialog: boolean;
   eventData:  IEventAgenda[];
   selectedEvent: IEventAgenda;
+  addAgenda: IAgenda;
   startDateSlot?: Date;
   endDateSlot?:Date;
   isloading: boolean;
@@ -31,6 +33,11 @@ export interface ICompactState {
   panelIsOpen:boolean;
   panelType:PanelType;
   panelDescription:string;
-  agendaEditMode:string
+  agendaEditMode:string;
+  title:string;
+  rank:string;
+  duration:string;
+  topic:string;
+  content:string;
 
 }
