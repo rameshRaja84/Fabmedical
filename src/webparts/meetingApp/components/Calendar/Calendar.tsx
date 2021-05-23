@@ -6,7 +6,7 @@ import { escape } from '@microsoft/sp-lodash-subset';
 import * as moment from 'moment';
 import * as strings from 'MeetingAppWebPartStrings';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-require('./calendar.css');
+//require('./calendar.css');
 import { CommunicationColors, FluentCustomizations, FluentTheme } from '@uifabric/fluent-theme';
 import Year from './Year';
 
@@ -133,6 +133,7 @@ export default class Calendar extends React.Component<ICalendarProps, ICalendarS
    */
   public async componentDidMount() {
     this.setState({ isloading: true });
+  
     await this.loadEvents();
     this.setState({ isloading: false });
   }

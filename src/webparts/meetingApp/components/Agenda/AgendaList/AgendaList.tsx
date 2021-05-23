@@ -30,14 +30,16 @@ export default class AgendaList extends React.Component<IAgendaListProps, IAgend
     };
   }
 
-  public componentDidMount() {
-  this.getItems();
+  public async componentDidMount() {
+  await this.getItems();
 }
 
-public getItems(){
+private async getItems(){
 
   if(this.props.meetingID){
     const restApi = `${this.props.context.pageContext.web.absoluteUrl}/_api/web/lists/GetByTitle('MApp-Agenda')/items?$filter=MeetingAppEventID eq ${this.props.meetingID}`;
+    
+    alert("Getting Documents");
     this.props.context.spHttpClient.get(restApi, SPHttpClient.configurations.v1)
       .then(resp => { return resp.json(); })
       .then(items => {
@@ -49,9 +51,12 @@ public getItems(){
 }
 
 
+private test(){
+  alert("Data changed");
+}
 
   public render(): React.ReactElement<IAgendaListProps> {
-    //this.getItems();
+
 
     const viewFields: IViewField[] = [
       {
@@ -70,7 +75,7 @@ public getItems(){
             {
               item: rowitem,
               context: this.props.context,
-              ondatachange: this.getItems()
+              ondatachange: this.test()
             }
           );
           return element;

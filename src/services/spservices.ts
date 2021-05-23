@@ -683,13 +683,10 @@ console.log("SP Service call");
         let agenda: any = '';
 
         for (agenda of results.Row) {
-
-
-
-
           agendas.push({
             Id: agenda.ID,
             ID: agenda.ID,
+            Title:agenda.Title,
             MeetingAppEventID: agenda.MeetingAppEventID,
             MeetingAppRank: agenda.MeetingAppRank,
             MeetingAppDuration: agenda.MeetingAppDuration,
@@ -715,12 +712,12 @@ console.log("SP Service call");
       const web = Web(siteUrl);
 
       results = await web.lists.getByTitle(listName).items.add({
-        Title: newAgenda.MeetingAppTopic,
-        Rank: newAgenda.MeetingAppRank,
-        Duration: newAgenda.MeetingAppDuration,
-        Topic: newAgenda.MeetingAppTopic,
-        Content: newAgenda.MeetingAppContent,
-        EventID: newAgenda.ID,
+        Title: newAgenda.Title,
+        MeetingAppRank: newAgenda.MeetingAppRank,
+        MeetingAppDuration: newAgenda.MeetingAppDuration,
+        MeetingAppTopic: newAgenda.MeetingAppTopic,
+        MeetingAppContent: newAgenda.MeetingAppContent,
+        MeetingAppEventID: newAgenda.MeetingAppEventID
       });
     }
     catch (error) {

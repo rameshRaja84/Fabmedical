@@ -33,6 +33,8 @@ import PanelDialog from "./Dialog/PanelDialog";
 import { TextField, MaskedTextField } from '@fluentui/react/lib/TextField';
 import { Stack, IStackProps, IStackStyles } from '@fluentui/react/lib/Stack';
 import { Dropdown, DropdownMenuItemType, IDropdownStyles, IDropdownOption } from '@fluentui/react/lib/Dropdown';
+import { IAgenda } from "../../../../services/IAgenda";
+import { RichText } from "@pnp/spfx-controls-react/lib/RichText";
 
 const tileStyle: IDocumentCardStyles = {
   root: {
@@ -132,12 +134,19 @@ export default class Agenda extends React.Component<
     };
 
     this.initializeTopCommandBar();
-    this.setState({ isloading: true });
-    this.loadEvents();
-    this.setState({ isloading: false });
+
+    //this.loadEvents();
+
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    //this.handleSubmit = this.handleSubmit.bind(this);
   }
+
+  public async componentDidMount(){
+   this.setState({ isloading: true });
+   //alert("Called componend did mount");
+   await this.loadEvents();
+   this.setState({ isloading: false });
+ }
 
   /**
    * @private
@@ -158,6 +167,7 @@ export default class Agenda extends React.Component<
         this.props.agendaSiteUrl,
         this.props.list
       );
+
       const eventsData: IEventAgenda[] = await this.spService.getEventsAgenda(
         this.props.agendaSiteUrl,
         escape(this.props.list),
@@ -232,18 +242,44 @@ export default class Agenda extends React.Component<
   }
 
 
-  private async handleSubmit(event) {
+  // private async handleSubmit(event: MouseEvent) {
 
-    this.state.addAgenda.Title = this.state.title;
-    this.state.addAgenda.MeetingAppDuration = this.state.duration;
-    this.state.addAgenda.MeetingAppTopic = this.state.topic;
-    this.state.addAgenda.MeetingAppRank = this.state.rank;
-    this.state.addAgenda.MeetingAppEventID = this.state.selectedEventID;
+  //   console.log("Starting save");
+  //   this.state.addAgenda.Title = this.state.title;
+  //   this.state.addAgenda.MeetingAppDuration = this.state.duration;
+  //   this.state.addAgenda.MeetingAppTopic = this.state.topic;
+  //   this.state.addAgenda.MeetingAppRank = this.state.rank;
+  //   this.state.addAgenda.MeetingAppEventID = this.state.selectedEventID;
 
+  //   console.log("Calling save");
+  //   await this.spService.addAgenda(this.props.agendaSiteUrl, this.props.list, this.state.addAgenda);
+  //   event.preventDefault();
+  // }
 
-    await this.spService.addAgenda(this.props.agendaSiteUrl, this.props.list, this.state.addAgenda);
-    event.preventDefault();
+  handleSubmit = () => {
+//alert("Was clicked");
+
+console.log("Starting save");
+console.log("Saving values are title: " + this.state.title + "- duration: " + this.state.duration + "-topic: " + this.state.topic + " and rank: " + this.state.rank);
+
+const addAgenda: IAgenda = { Title:this.state.title, MeetingAppDuration:this.state.duration,MeetingAppContent:"dummy", MeetingAppEventID:this.state.selectedEventID,MeetingAppRank:this.state.rank,MeetingAppTopic: this.state.title}
+alert("Calling save");
+this.callSave(addAgenda);
   }
+
+
+
+
+
+    private async callSave(addAgenda:IAgenda){
+      await this.spService.addAgenda(this.props.agendaSiteUrl, "MApp-Agenda", addAgenda);
+      this._onDismissPanel();
+    }
+
+    private _onTextChange = (newText: string) => {
+      this.setState({ content: newText });
+      return newText;
+    }
 
 
   public render(): React.ReactElement<ICompactProps> {
@@ -289,8 +325,9 @@ export default class Agenda extends React.Component<
               <Stack horizontal tokens={stackTokens} styles={stackStyles}>
 
               <Stack {...columnProps}>
-                <TextField name="title" label="Title" id="title" required  value={this.state.title} onChange={this.handleInputChange}/>
+                <TextField className={styles.spfxPnpRichtext} name="title" label="Title" id="title" required  value={this.state.title} onChange={this.handleInputChange}/>
                 <Dropdown
+                className={styles.spfxPnpRichtext}
                 id="rank"
                 placeholder="Please select"
                 label="Rank"
@@ -299,19 +336,24 @@ export default class Agenda extends React.Component<
                 selectedKey={this.state.rank} onChange={this.handleInputChange}
               />
                 <Dropdown
+                className={styles.spfxPnpRichtext}
                 id="duration"
                 placeholder="Please select"
                 label="Duration"
                 options={durationOptions}
                 styles={dropdownStyles}
-                selectedKey={this.state.rank} onChange={this.handleInputChange}
+                selectedKey={this.state.duration} onChange={this.handleInputChange}
               />
-                <TextField name="Topic" label="Topic" id="topic" required value={this.state.topic}  onChange={this.handleInputChange}/>
+                <TextField  className={styles.spfxPnpRichtext} name="Topic" label="Topic" id="topic" required value={this.state.topic}  onChange={this.handleInputChange}/>
+
+
+                <RichText className={styles.spfxPnpRichtext} value={this.state.content} onChange={this._onTextChange} />
+
               </Stack>
 
               </Stack>
               <Stack horizontal tokens={stackTokens} styles={stackStyles}>
-              <DefaultButton text="Save" onClick={() => this.handleSubmit} allowDisabledFocus  style={{ backgroundColor: SharedColors.green10 }} />
+              <DefaultButton text="Save" onClick={this.handleSubmit} allowDisabledFocus  style={{ backgroundColor: SharedColors.green10 }} />
               <DefaultButton text="Cancel" onClick={() => this._onDismissPanel()} allowDisabledFocus  style={{ backgroundColor: SharedColors.red10 }} />
               </Stack>
           </Panel>;
