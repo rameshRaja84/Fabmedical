@@ -66,25 +66,30 @@ export class ECB extends React.Component<IECBProps, {}> {
 
 
   private async handleClick(actionType: string, seletedfile: any, event) {
-      if (actionType === 'open') {
-        alert("open");
-          // window.open(
-          //     window.location.protocol + "//" + window.location.host + seletedfile.ServerRelativeUrl + "?web=1",
-          //     '_blank'
-          // );
-      }
-      else if (actionType === 'download') {
-        alert("download");
-        // window.open(
-          //     window.location.protocol + "//" + window.location.host + seletedfile.ServerRelativeUrl + "?web=0",
-          //     '_blank'
-          // );
-      }
-      else if (actionType === 'delete') {
-        alert("delete");
-          // let list = sp.web.lists.getByTitle("Policies");
-          // await list.items.getById(seletedfile["ListItemAllFields.ID"]).delete();
-          // this.props.ondatachange();
-      }
+
+    this.props.clickMe(actionType,seletedfile,event);
+      // if (actionType === 'open') {
+      //   alert("open");
+      //     // window.open(
+      //     //     window.location.protocol + "//" + window.location.host + seletedfile.ServerRelativeUrl + "?web=1",
+      //     //     '_blank'
+      //     // );
+      // }
+      // else if (actionType === 'download') {
+      //   alert("download");
+      //   // window.open(
+      //     //     window.location.protocol + "//" + window.location.host + seletedfile.ServerRelativeUrl + "?web=0",
+      //     //     '_blank'
+      //     // );
+      // }
+      // else if (actionType === 'delete') {
+      //   alert("delete");
+      //     // let list = sp.web.lists.getByTitle("Policies");
+      //     // await list.items.getById(seletedfile["ListItemAllFields.ID"]).delete();
+      //     // this.props.ondatachange();
+      // }
   }
+
+
+  
 }
