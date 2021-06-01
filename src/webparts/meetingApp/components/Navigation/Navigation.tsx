@@ -160,6 +160,14 @@ function Navigation(props: INavigationProps) {
         </div>
       );
     }
+    else{
+      return (
+        <div style={{ backgroundColor: NeutralColors.gray60 }}>
+        <Customizer {...FluentCustomizations}>
+        <HomePage title="MeetingApp" ></HomePage></Customizer>
+          </div>
+      );
+    }
   };
 
   return (

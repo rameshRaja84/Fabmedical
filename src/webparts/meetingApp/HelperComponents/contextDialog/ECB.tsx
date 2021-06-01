@@ -7,7 +7,7 @@ import { sp } from "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import "@pnp/sp/items";
-import styles from './ECB.module.scss';
+import styles from "./ECB.module.scss";
 
 export class ECB extends React.Component<IECBProps, {}> {
 
@@ -39,6 +39,11 @@ export class ECB extends React.Component<IECBProps, {}> {
                               onClick: this.handleClick.bind(this, "edit", this.props.item)
                           },
                           {
+                            key: 'action3',
+                            name: 'Delete',
+                            onClick: this.handleClick.bind(this, "delete", this.props.item)
+                          },
+                          {
                               key: 'divider_1',
                               itemType: ContextualMenuItemType.Divider
                           },
@@ -46,11 +51,6 @@ export class ECB extends React.Component<IECBProps, {}> {
                               key: 'action2',
                               name: 'Copy',
                               onClick: this.handleClick.bind(this, "copy", this.props.item)
-                          },
-                          {
-                              key: 'action3',
-                              name: 'Delete',
-                              onClick: this.handleClick.bind(this, "delete", this.props.item)
                           },
                           {
                               key: 'disabled',
@@ -67,6 +67,7 @@ export class ECB extends React.Component<IECBProps, {}> {
 
   private async handleClick(actionType: string, seletedfile: any, event) {
 
+    
     this.props.clickMe(actionType,seletedfile,event);
       // if (actionType === 'open') {
       //   alert("open");
@@ -91,5 +92,5 @@ export class ECB extends React.Component<IECBProps, {}> {
   }
 
 
-  
+
 }

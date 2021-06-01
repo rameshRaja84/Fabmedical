@@ -5,4 +5,5 @@ export interface IAgendaListProps {
   context: WebPartContext;
   agendaSiteUrl: string;
   list: string;
+
 }

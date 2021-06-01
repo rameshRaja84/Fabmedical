@@ -28,8 +28,8 @@ import {
 import CompactLayout from "../../HelperComponents/compactLayout/CompactLayout";
 import { Paging } from "../../HelperComponents/paging";
 import { Panel, PanelType } from "@fluentui/react/lib/Panel";
-import { SharedColors } from "@fluentui/theme";
-import PanelDialog from "./Dialog/PanelDialog";
+// import { SharedColors } from "@fluentui/theme";
+// import PanelDialog from "./Dialog/PanelDialog";
 import { TextField, MaskedTextField } from "@fluentui/react/lib/TextField";
 import { Stack, IStackProps, IStackStyles } from "@fluentui/react/lib/Stack";
 import {
@@ -88,6 +88,7 @@ const durationOptions: IDropdownOption[] = [
   { key: "60", text: "60" },
 ];
 
+
 export default class Agenda extends React.Component<
   ICompactProps,
   ICompactState
@@ -129,6 +130,7 @@ export default class Agenda extends React.Component<
       title: "",
       topic: "",
     };
+
 
     this.initializeTopCommandBar();
 
@@ -176,7 +178,7 @@ export default class Agenda extends React.Component<
       }
 
       return (
-        <div>
+         <React.Fragment>
           <CommandBar
             items={_items}
             ariaLabel="Use left and right arrow keys to navigate between commands"
@@ -191,7 +193,7 @@ export default class Agenda extends React.Component<
             />
           </div>
           {panel}
-        </div>
+          </React.Fragment>
       );
     } else {
       return this.displayOverView(
@@ -203,6 +205,8 @@ export default class Agenda extends React.Component<
       );
     }
   }
+
+
 
   /**
    * @Methods
@@ -474,6 +478,7 @@ export default class Agenda extends React.Component<
       addAgenda
     );
     this._onDismissPanel();
+    this.handelfunction();
   }
 
   private _onTextChange = (newText: string) => {

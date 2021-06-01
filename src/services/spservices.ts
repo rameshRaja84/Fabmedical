@@ -706,6 +706,35 @@ console.log("SP Service call");
   }
 
 
+  public async getAgendaByID(siteUrl: string, listName: string, itemID: number): Promise<IAgenda> {
+    let returnAgenda: IAgenda = undefined;
+    try {
+      const web = Web(siteUrl);
+
+      const agenda = await web.lists.getByTitle(listName).items.usingCaching().getById(itemID)
+        .select("Id", "ID", "Title", "MeetingAppRank", "MeetingAppDuration", "MeetingAppTopic", "MeetingAppContent", "MeetingAppEventID")
+        .get();
+
+      returnAgenda = {
+        Id: agenda.ID,
+        ID: agenda.ID,
+        Title: agenda.title,
+        MeetingAppTopic: agenda.MeetingAppTopic,
+        MeetingAppContent : agenda.MeetingAppContent,
+        MeetingAppDuration : agenda.MeetingAppDuration,
+        MeetingAppRank : agenda.MeetingAppRank,
+        MeetingAppEventID : agenda.MeetingAppEventID
+      };
+    }
+    catch (error) {
+      return Promise.reject(error);
+    }
+    return returnAgenda;
+  }
+
+
+
+
   public async addAgenda(siteUrl: string, listName: string, newAgenda: IAgenda) {
     let results = null;
     try {
@@ -725,6 +754,40 @@ console.log("SP Service call");
     }
     return results;
   }
+
+  public async updateAgenda(siteUrl: string, listName: string, agendaID : number, updateAgenda: IAgenda) {
+    let results = null;
+    try {
+      const web = Web(siteUrl);
+
+      results = await web.lists.getByTitle(listName).items.getById(agendaID).update({
+        Title: updateAgenda.Title,
+        MeetingAppRank: updateAgenda.MeetingAppRank,
+        MeetingAppDuration: updateAgenda.MeetingAppDuration,
+        MeetingAppTopic: updateAgenda.MeetingAppTopic,
+        MeetingAppContent: updateAgenda.MeetingAppContent,
+        MeetingAppEventID: updateAgenda.MeetingAppEventID
+      });
+    }
+    catch (error) {
+      return Promise.reject(error);
+    }
+    return results;
+  }
+
+
+  public async deleteAgenda(siteUrl: string, listname: string, agendaID: number) {
+    let results = null;
+    try {
+      const web = Web(siteUrl);
+      await web.lists.getByTitle(listname).items.getById(agendaID).delete();
+
+    } catch (error) {
+      return Promise.reject(error);
+    }
+    return;
+  }
+
 
   /**
    *
