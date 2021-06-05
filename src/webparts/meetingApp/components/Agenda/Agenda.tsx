@@ -129,6 +129,7 @@ export default class Agenda extends React.Component<
       rank: "1",
       title: "",
       topic: "",
+      updateChild: false
     };
 
 
@@ -148,7 +149,7 @@ export default class Agenda extends React.Component<
   }
 
   public render(): React.ReactElement<ICompactProps> {
-    //alert("rendering " + this.state.showAgendaDetails);
+
     let pagedItems: any[] = this.state.eventData;
     const totalItems: number = pagedItems.length;
     let showPages: boolean = false;
@@ -186,6 +187,7 @@ export default class Agenda extends React.Component<
 
           <div>
             <AgendaList
+              update ={this.state.updateChild}
               agendaSiteUrl={this.props.agendaSiteUrl}
               meetingID={this.state.selectedEventID}
               context={this.props.context}
@@ -478,7 +480,10 @@ export default class Agenda extends React.Component<
       addAgenda
     );
     this._onDismissPanel();
-    this.handelfunction();
+
+  this.setState({
+     updateChild:true
+    });
   }
 
   private _onTextChange = (newText: string) => {
@@ -496,6 +501,10 @@ export default class Agenda extends React.Component<
     this.setState({
       panelIsOpen: true,
       agendaEditMode: "newAgenda",
+      title : "",
+      duration:"15",
+      content:"",
+      rank:"1",
     });
   }
 

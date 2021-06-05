@@ -1,11 +1,9 @@
-export interface IConfirmProps {
-  isDraggable:boolean;
-  labelId:string;
-  subTextId:string;
-  displayDialog:boolean;
-}
-
-export interface IConfirmState {
-  showDialog:boolean;
-  hideDialog:boolean;
+export interface DetailsDialogProps {
+  title:string;
+  subText:string;
+  children?: never[]
+  open: boolean;
+  agendaName:string;
+  onClose: () => void;
+  onDelete:() => void;
 }

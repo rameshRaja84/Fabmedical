@@ -39,5 +39,6 @@ export interface ICompactState {
   duration:string;
   topic:string;
   content:string;
+  updateChild:boolean;
 
 }

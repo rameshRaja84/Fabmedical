@@ -10,6 +10,8 @@ import { getTheme } from '@fluentui/react';
 function HomePage(props: IHomeProps) {
   return (
   <div className={styles.HomeMain}>
+    <img src={require('../../assets/meetingHeader.jpg')} alt="Meeting Pic" className={styles.HomePic} ></img>
+
    <h1 >Meeting-App</h1>
    <p>Verwalten Sie ihre Termine unter Administration</p>
     </div>

@@ -1,34 +1,25 @@
 import * as React from 'react';
 import { Dialog, DialogFooter, DialogType } from 'office-ui-fabric-react/lib/Dialog';
-import { useBoolean } from '@uifabric/react-hooks';
+//import { useBoolean } from '@uifabric/react-hooks';
 import { DefaultButton, PrimaryButton } from 'office-ui-fabric-react/lib/Button';
-import { ContextualMenu } from '@fluentui/react/lib/ContextualMenu';
+//import { ContextualMenu } from '@fluentui/react/lib/ContextualMenu';
+import {DetailsDialogProps} from './Confirm.types'
 
-export interface DetailsDialogProps {
-  children?: never[]
-  open: boolean;
-  agendaName:string;
-  onClose: () => void;
-  onDelete:() => void;
-}
 
 export function DetailsDialog(props: DetailsDialogProps) {
 
-  function formatValue(val: string) {
-    return (val ? val : "-");
-  }
+  // function formatValue(val: string) {
+  //   return (val ? val : "-");
+  // }
 
-  const { open, agendaName, onClose, onDelete } = props;
-
+  const { title, subText, open, agendaName, onClose, onDelete } = props;
   const dialogStyles = { main: { maxWidth: 800 } };
-
-
 
   const dialogContentProps = {
     type: DialogType.normal,
-    title: 'Confirm Delete',
+    title: title,
     closeButtonAriaLabel: 'Close',
-    subText: 'Do you really want to delete the following agenda?'
+    subText: subText
   };
 
 

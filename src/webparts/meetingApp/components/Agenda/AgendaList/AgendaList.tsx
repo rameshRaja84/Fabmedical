@@ -131,6 +131,18 @@ export default class AgendaList extends React.Component<
     await this.getItems();
   }
 
+  public async componentDidUpdate(){
+    //console.log("AgendaList updated ");
+    if(this.props.update){
+      await this.getItems();
+    }
+    else{
+      console.log("Not updated");
+    }
+
+  }
+
+
 
   public render(): React.ReactElement<IAgendaListProps> {
 
@@ -151,7 +163,7 @@ export default class AgendaList extends React.Component<
             {
               item: rowitem,
               context: this.props.context,
-              ondatachange: this.test(),
+              ondatachange: this._ecbOnDatachange(),
               clickMe : this.handleClick
             }
           );
@@ -214,6 +226,8 @@ export default class AgendaList extends React.Component<
       {
                 this.state.openDialog ?
                   <DetailsDialog
+                    title = "Confirm"
+                    subText = "Do you really want to delete?"
                     open={this.state.openDialog}
                     onClose={this.closeDialog.bind(this)}
                     agendaName ={this.state.selectedAgendaTitle}
@@ -238,18 +252,6 @@ export default class AgendaList extends React.Component<
 
   }
 
-
-
-
-//   getDialog(){
-//     return(
-// <ConfirmDialog  displayDialog={false} isDraggable={false}   labelId={"dialogLabel"} subTextId={"subTextLabel"}></ConfirmDialog>
-
-//     )
-//   }
-
-
-
   private async getItems() {
     if (this.props.meetingID) {
       const restApi = `${this.props.context.pageContext.web.absoluteUrl}/_api/web/lists/GetByTitle('MApp-Agenda')/items?$filter=MeetingAppEventID eq ${this.props.meetingID}`;
@@ -268,7 +270,7 @@ export default class AgendaList extends React.Component<
     }
   }
 
-  private test() {
+  private _ecbOnDatachange() {
     //alert("Data changed");
   }
 
