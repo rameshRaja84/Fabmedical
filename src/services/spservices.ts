@@ -668,13 +668,13 @@ export default class spservices {
   }
 
 
-  public async getAgendas(siteUrl: string, listName: string, itemId:number): Promise<IAgenda[]> {
+  public async getAgendas(siteUrl: string, listName: string, eventID:number): Promise<IAgenda[]> {
     try {
 
       let agendas: IAgenda[] = [];
       const web = Web(siteUrl);
       const results = await sp.web.lists.getByTitle(listName).getItemsByCAMLQuery({
-        ViewXml: "<View><Query><Where><Eq><FieldRef Name='MeetingAppEventID'/><Value Type='Integer'>" + itemId + "</Value></Eq></Where></Query></View>",
+        ViewXml: "<View><Query><Where><Eq><FieldRef Name='MeetingAppEventID'/><Value Type='Integer'>" + eventID + "</Value></Eq></Where></Query></View>",
     });
 
 console.log("SP Service call");
@@ -732,6 +732,50 @@ console.log("SP Service call");
     return returnAgenda;
   }
 
+  public async getAgendasTopRank(siteUrl: string, listName: string, eventID:any, maxNumber:number): Promise<string> {
+
+    let rankNumber:number = 1;
+
+    try {
+      console.log("listname: " + listName + "eventID" + eventID);
+
+      const web = Web(siteUrl);
+      const results = await sp.web.lists.getByTitle(listName).getItemsByCAMLQuery({
+        ViewXml: "<View><Query><Where><Eq><FieldRef Name='MeetingAppEventID'/><Value Type='Integer'>" + eventID + "</Value></Eq></Where></Query></View>",
+    });
+
+    console.log("Results", results);
+    console.log("Result length is " + results.length );
+    if (results && results.length > 0){
+      let agenda: any = '';
+
+
+      for (agenda of results) {
+
+        //console.log(agenda.MeetingAppRank);
+        if(rankNumber==null){
+          rankNumber = agenda.MeetingAppRank;
+        }
+        else if (rankNumber < agenda.MeetingAppRank){
+          rankNumber = agenda.MeetingAppRank;
+        }
+      }
+
+    }
+
+    //console.log("Top rank is",rankNumber);
+    if(rankNumber <= maxNumber){
+      rankNumber++;
+    }
+
+    return rankNumber.toString();
+
+    } catch (error) {
+      console.dir(error);
+      return Promise.reject(error);
+    }
+
+  }
 
 
 

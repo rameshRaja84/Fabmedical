@@ -17,30 +17,27 @@ import { IButtonProps } from "@fluentui/react/lib/Button";
 // Used to render document cards
 import {
   DocumentCard,
-  DocumentCardPreview,
   DocumentCardDetails,
   DocumentCardTitle,
-  IDocumentCardPreviewProps,
-  DocumentCardActivity,
   IDocumentCardStyles,
   DocumentCardType,
 } from "office-ui-fabric-react/lib/DocumentCard";
 import CompactLayout from "../../HelperComponents/compactLayout/CompactLayout";
 import { Paging } from "../../HelperComponents/paging";
 import { Panel, PanelType } from "@fluentui/react/lib/Panel";
-// import { SharedColors } from "@fluentui/theme";
-// import PanelDialog from "./Dialog/PanelDialog";
-import { TextField, MaskedTextField } from "@fluentui/react/lib/TextField";
+import { TextField } from "@fluentui/react/lib/TextField";
 import { Stack, IStackProps, IStackStyles } from "@fluentui/react/lib/Stack";
 import {
   Dropdown,
-  DropdownMenuItemType,
   IDropdownStyles,
   IDropdownOption,
 } from "@fluentui/react/lib/Dropdown";
 import { IAgenda } from "../../../../services/IAgenda";
 import { RichText } from "@pnp/spfx-controls-react/lib/RichText";
 import { Label } from "@fluentui/react/lib/Label";
+import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+import { FilePicker, IFilePickerResult } from '@pnp/spfx-controls-react/lib/FilePicker';
+import { FileTypeIcon, ApplicationType, IconType, ImageSize } from "@pnp/spfx-controls-react/lib/FileTypeIcon";
 
 const tileStyle: IDocumentCardStyles = {
   root: {
@@ -53,6 +50,7 @@ const tileStyle: IDocumentCardStyles = {
 
 var _items: ICommandBarItemProps[] = null;
 const stackTokens = { childrenGap: 50 };
+const maxAgendaRank:number = 15;
 const stackStyles: Partial<IStackStyles> = { root: { width: 550 } };
 const columnProps: Partial<IStackProps> = {
   tokens: { childrenGap: 20 },
@@ -88,7 +86,6 @@ const durationOptions: IDropdownOption[] = [
   { key: "60", text: "60" },
 ];
 
-
 export default class Agenda extends React.Component<
   ICompactProps,
   ICompactState
@@ -106,7 +103,6 @@ export default class Agenda extends React.Component<
       this.props.context.pageContext.cultureInfo.currentUICultureName
     );
 
-    // Sample data generated at https://mockaroo.com/
     this.state = {
       showDialog: false,
       eventData: [],
@@ -129,16 +125,12 @@ export default class Agenda extends React.Component<
       rank: "1",
       title: "",
       topic: "",
-      updateChild: false
+      updateChild: false,
+      filePickerResult:null
     };
 
-
     this.initializeTopCommandBar();
-
-    //this.loadEvents();
-
-    this.handleInputChange = this.handleInputChange.bind(this);
-    //this.handleSubmit = this.handleSubmit.bind(this);
+    this._onHandleInputChange = this._onHandleInputChange.bind(this);
   }
 
   public async componentDidMount() {
@@ -149,7 +141,6 @@ export default class Agenda extends React.Component<
   }
 
   public render(): React.ReactElement<ICompactProps> {
-
     let pagedItems: any[] = this.state.eventData;
     const totalItems: number = pagedItems.length;
     let showPages: boolean = false;
@@ -170,16 +161,14 @@ export default class Agenda extends React.Component<
 
     if (this.state.showAgendaDetails) {
       let panel;
-      // panelIsOpen: true,
-      // agendaEditMode:"newAgenda"
       if (this.state.panelIsOpen == true) {
         if (this.state.agendaEditMode == "newAgenda") {
-         panel = this.getAddPanel();
+          panel = this.getAddPanel();
         }
       }
 
       return (
-         <React.Fragment>
+        <React.Fragment>
           <CommandBar
             items={_items}
             ariaLabel="Use left and right arrow keys to navigate between commands"
@@ -187,7 +176,7 @@ export default class Agenda extends React.Component<
 
           <div>
             <AgendaList
-              update ={this.state.updateChild}
+              update={this.state.updateChild}
               agendaSiteUrl={this.props.agendaSiteUrl}
               meetingID={this.state.selectedEventID}
               context={this.props.context}
@@ -195,7 +184,7 @@ export default class Agenda extends React.Component<
             />
           </div>
           {panel}
-          </React.Fragment>
+        </React.Fragment>
       );
     } else {
       return this.displayOverView(
@@ -208,11 +197,9 @@ export default class Agenda extends React.Component<
     }
   }
 
-
-
   /**
    * @Methods
-   * @memberof AgendaList
+   * @memberof Agenda
    */
   private async loadEvents() {
     try {
@@ -249,6 +236,8 @@ export default class Agenda extends React.Component<
       });
     }
   }
+
+
 
   public initializeTopCommandBar() {
     _items = [
@@ -331,103 +320,138 @@ export default class Agenda extends React.Component<
     );
   };
 
-  private getAddPanel(){
+  private getAddPanel() {
     return (
       <Panel
-      isOpen={this.state.panelIsOpen}
-      onDismiss={() => this._onDismissPanel()}
-      type={this.state.panelType}
-      customWidth={
-        this.state.panelType === PanelType.custom ||
-        this.state.panelType === PanelType.customNear
-          ? "888px"
-          : undefined
-      }
-      closeButtonAriaLabel="Close"
-      headerText="Add Agenda"
-    >
-      <Stack horizontal tokens={stackTokens} styles={stackStyles}>
-        <Stack {...columnProps}>
+        isOpen={this.state.panelIsOpen}
+        onDismiss={() => this._onDismissPanel()}
+        type={this.state.panelType}
+        customWidth={
+          this.state.panelType === PanelType.custom ||
+          this.state.panelType === PanelType.customNear
+            ? "888px"
+            : undefined
+        }
+        closeButtonAriaLabel="Close"
+        headerText="Add Agenda"
+      >
+        <Stack horizontal tokens={stackTokens} styles={stackStyles}>
+          <Stack {...columnProps}>
           <TextField
-            className={styles.spfxPnpRichtext}
-            name="title"
-            label="Title"
-            id="title"
-            required
-            value={this.state.title}
-            onChange={this.handleInputChange}
-          />
-          <Dropdown
-            className={styles.spfxPnpRichtext}
-            id="rank"
-            placeholder="Please select"
-            label="Rank"
-            options={rankOptions}
-            styles={dropdownStyles}
-            selectedKey={this.state.rank}
-            onChange={this.handleInputChange}
-          />
-          <Dropdown
-            className={styles.spfxPnpRichtext}
-            id="duration"
-            placeholder="Please select"
-            label="Duration"
-            options={durationOptions}
-            styles={dropdownStyles}
-            selectedKey={this.state.duration}
-            onChange={this.handleInputChange}
-          />
-          <TextField
-            className={styles.spfxPnpRichtext}
-            name="Topic"
-            label="Topic"
-            id="topic"
-            required
-            value={this.state.topic}
-            onChange={this.handleInputChange}
-          />
+             className={styles.spfxPnpRichtext}
+             name="rank"
+             label="Rank"
+             id="rank"
+             required
+             value={this.state.rank}
+             readOnly={true}
+             onChange={this._onHandleInputChange}
+            ></TextField>
+            <TextField
+              className={styles.spfxPnpRichtext}
+              name="Topic"
+              label="Topic"
+              id="topic"
+              required
+              value={this.state.topic}
+              onChange={this._onHandleInputChange}
+            />
+            <PeoplePicker
+                context={this.props.context}
+                titleText="Initiator"
+                personSelectionLimit={1}
+                groupName={"Meeting App Contributors"} // Leave this blank in case you want to filter from all users
+                showtooltip={true}
+                required={true}
+                disabled={false}
+                onChange={this._getPeoplePickerItems}
+                showHiddenInUI={false}
+                principalTypes={[PrincipalType.User]}
+                resolveDelay={1000} />
+            <Dropdown
+              className={styles.spfxPnpRichtext}
+              id="duration"
+              placeholder="Please select"
+              label="Duration (Minutes)"
+              options={durationOptions}
+              styles={dropdownStyles}
+              selectedKey={this.state.duration}
+              onChange={this._onHandleInputChange}
+            />
 
-          <Label>Content</Label>
-          <RichText
-            className={styles.spfxPnpRichtext}
-            value={this.state.content}
-            onChange={this._onTextChange}
+            <FilePicker
+
+              accepts= {[".gif", ".jpg", ".jpeg", ".bmp", ".dib", ".tif", ".tiff", ".ico", ".png", ".jxr", ".svg"]}
+              buttonIcon="FileImage"
+              onSave={this._onFilePickerSave}
+              onChange={this._onFilePickerChange}
+              context={this.props.context}
+            />
+            <Label>Content</Label>
+            <RichText
+              className={styles.spfxPnpRichtext}
+              value={this.state.content}
+              onChange={this._onTextChange}
+            />
+
+
+          </Stack>
+        </Stack>
+        <Stack horizontal tokens={stackTokens} styles={stackStyles}>
+          <PrimaryButton
+            text="Save"
+            onClick={this._onHandleSubmit}
+            allowDisabledFocus
+            className={styles.panelButton}
+          />
+          <DefaultButton
+            text="Cancel"
+            onClick={() => this._onDismissPanel()}
+            allowDisabledFocus
+            className={styles.panelButton}
           />
         </Stack>
-      </Stack>
-      <Stack horizontal tokens={stackTokens} styles={stackStyles}>
-        <PrimaryButton
-          text="Save"
-          onClick={this.handleSubmit}
-          allowDisabledFocus
-          className={styles.panelButton}
-        />
-        <DefaultButton
-          text="Cancel"
-          onClick={() => this._onDismissPanel()}
-          allowDisabledFocus
-          className={styles.panelButton}
-        />
-      </Stack>
-    </Panel>
-
-    )
-
+      </Panel>
+    );
   }
 
+  private _onFilePickerSave = async (filePickerResult: IFilePickerResult) => {
+    this.setState({ filePickerResultTest: filePickerResult });
+    if (filePickerResult) {
+      // for (var i = 0; i < filePickerResult.length; i++) {
+      //   const item = filePickerResult[i];
+      //   const fileResultContent = await item.downloadFileContent();
+      //   console.log(fileResultContent);
+      // }
+    }
+  }
+
+  private _onFilePickerChange = async (filePickerResult: IFilePickerResult) => {
+    this.setState({ filePickerResultTest: filePickerResult });
+    if (filePickerResult) {
+      // for (var i = 0; i < filePickerResult.length; i++) {
+      //   const item = filePickerResult[i];
+      //   const fileResultContent = await item.downloadFileContent();
+      //   console.log(fileResultContent);
+      // }
+    }
+  }
+
+  private _getPeoplePickerItems(items: any[]) {
+    console.log('Items:', items);
+  }
 
 
   /**
    * @ Events
-   * @memberof AgendaList
+   * @memberof Agenda
    */
-  private handleInputChange(event) {
+  private _onHandleInputChange(event) {
+
     const target = event.target;
     const value = target.type === "checkbox" ? target.checked : target.value;
-    //const name = target.name;
     const id = target.id;
-    //console.log("Names is " + name);
-    console.log("ID is " + id);
+
 
     if (id == "title") {
       this.setState({
@@ -448,7 +472,7 @@ export default class Agenda extends React.Component<
     }
   }
 
-  handleSubmit = () => {
+  private _onHandleSubmit = () => {
     console.log("Starting save");
     console.log(
       "Saving values are title: " +
@@ -462,12 +486,12 @@ export default class Agenda extends React.Component<
     );
 
     const addAgenda: IAgenda = {
-      Title: this.state.title,
+      Title: this.state.rank + "_" + this.state.topic,
       MeetingAppDuration: this.state.duration,
       MeetingAppContent: this.state.content,
       MeetingAppEventID: this.state.selectedEventID,
       MeetingAppRank: this.state.rank,
-      MeetingAppTopic: this.state.title,
+      MeetingAppTopic: this.state.topic,
     };
     //alert("Calling save");
     this.callSave(addAgenda);
@@ -481,8 +505,8 @@ export default class Agenda extends React.Component<
     );
     this._onDismissPanel();
 
-  this.setState({
-     updateChild:true
+    this.setState({
+      updateChild: true,
     });
   }
 
@@ -497,15 +521,23 @@ export default class Agenda extends React.Component<
     });
   }
 
-  private _onAddNewDialog() {
-    this.setState({
-      panelIsOpen: true,
-      agendaEditMode: "newAgenda",
-      title : "",
-      duration:"15",
-      content:"",
-      rank:"1",
-    });
+  private  _onAddNewDialog() {
+     this.setAddDialog();
+
+  }
+
+  private async setAddDialog(){
+   let topRank:string = await this.spService.getAgendasTopRank( this.props.agendaSiteUrl, escape("MApp-Agenda"), this.state.selectedEventID, maxAgendaRank);
+
+ this.setState({
+   panelIsOpen: true,
+   agendaEditMode: "newAgenda",
+   title: "",
+   duration: "15",
+   content: "",
+   rank: topRank,
+ });
+
   }
 
   private _onDismissPanel() {
@@ -529,7 +561,4 @@ export default class Agenda extends React.Component<
     });
   };
 
-  // public passedFunction = () => {
-  //   console.log("sucessfully passed");
-  // };
 }

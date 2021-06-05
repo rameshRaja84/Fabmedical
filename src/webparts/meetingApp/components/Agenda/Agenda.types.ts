@@ -3,6 +3,7 @@ import { IDateTimeFieldValue } from '@pnp/spfx-property-controls/lib/PropertyFie
 import { PanelType } from "office-ui-fabric-react";
 import { IEventAgenda } from "../../../../services/IEventAgenda";
 import { IAgenda } from "../../../../services/IAgenda";
+import { IFilePickerResult } from '@pnp/spfx-controls-react/lib/FilePicker';
 
 export interface ICompactProps {
   usePaging: boolean;
@@ -40,5 +41,5 @@ export interface ICompactState {
   topic:string;
   content:string;
   updateChild:boolean;
-
+  filePickerResultTest:IFilePickerResult;
 }

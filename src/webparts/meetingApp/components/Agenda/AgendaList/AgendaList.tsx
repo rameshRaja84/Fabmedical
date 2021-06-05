@@ -24,7 +24,9 @@ import { Items } from "@pnp/sp/items";
 import { Panel, PanelType } from "@fluentui/react/lib/Panel";
 import { TextField } from "@fluentui/react/lib/TextField";
 import {
-  Dropdown,IDropdownStyles,IDropdownOption
+  Dropdown,
+  IDropdownStyles,
+  IDropdownOption,
 } from "@fluentui/react/lib/Dropdown";
 import { Label } from "@fluentui/react/lib/Label";
 import { RichText } from "@pnp/spfx-controls-react/lib/RichText";
@@ -32,7 +34,6 @@ import { PrimaryButton, DefaultButton } from "@fluentui/react/lib/Button";
 import { Stack, IStackProps, IStackStyles } from "@fluentui/react/lib/Stack";
 import styles from "./AgendaList.module.scss";
 import { IAgenda } from "../../../../../services/IAgenda";
-import { Dialog, DialogType, DialogFooter } from '@fluentui/react/lib/Dialog';
 
 
 const stackTokens = { childrenGap: 50 };
@@ -71,36 +72,11 @@ const durationOptions: IDropdownOption[] = [
   { key: "60", text: "60" },
 ];
 
-// const labelId: string = "dialogLabel";
-// const subTextId: string = "subTextLabel";
-// const dialogStyles = { main: { maxWidth: 450 } };
-// const dialogContentProps = {
-//   type: DialogType.normal,
-//   title: 'Missing Subject',
-//   closeButtonAriaLabel: 'Close',
-//   subText: 'Do you want to delete?',
-// };
-
-// const modalProps = React.useMemo(
-//   () => ({
-//     titleAriaId: labelId,
-//     subtitleAriaId: subTextId,
-//     isBlocking: false,
-//     styles: dialogStyles,
-//     dragOptions: undefined,
-//   }),
-//   [false, labelId, subTextId],
-// );
-
-
 export default class AgendaList extends React.Component<
   IAgendaListProps,
   IAgendaListPropsState
 > {
-
   private spService: spservices = null;
-
-
 
   constructor(props: IAgendaListProps) {
     super(props);
@@ -116,36 +92,29 @@ export default class AgendaList extends React.Component<
       topic: "",
       panelIsOpen: false,
       panelType: PanelType.medium,
-      currentAction : "none",
-      hideConfirmDialog:true,
-      openDialog:false,
-      selectedAgendaID : null,
-      selectedAgendaTitle:"",
-      updateItems:false
+      currentAction: "none",
+      hideConfirmDialog: true,
+      openDialog: false,
+      selectedAgendaID: null,
+      selectedAgendaTitle: "",
+      updateItems: false,
     };
-
-
   }
 
   public async componentDidMount() {
     await this.getItems();
   }
 
-  public async componentDidUpdate(){
+  public async componentDidUpdate() {
     //console.log("AgendaList updated ");
-    if(this.props.update){
+    if (this.props.update) {
       await this.getItems();
-    }
-    else{
+    } else {
       console.log("Not updated");
     }
-
   }
 
-
-
   public render(): React.ReactElement<IAgendaListProps> {
-
     const viewFields: IViewField[] = [
       {
         name: "Title",
@@ -164,7 +133,7 @@ export default class AgendaList extends React.Component<
               item: rowitem,
               context: this.props.context,
               ondatachange: this._ecbOnDatachange(),
-              clickMe : this.handleClick
+              clickMe: this.handleClick,
             }
           );
           return element;
@@ -197,60 +166,53 @@ export default class AgendaList extends React.Component<
       },
     ];
 
-
     let panel;
     if (this.state.panelIsOpen == true) {
       if (this.state.currentAction == "edit") {
-       panel = this.getEditPanel();
+        panel = this.getEditPanel();
       }
     }
 
-    let confirmDialog;
-
-    // if (this.state.hideConfirmDialog == false) {
-    //   confirmDialog = this.getDialog();
-    // }
-
     return (
       <React.Fragment>
-      <ListView
-
-        items={this.state.items}
-        viewFields={viewFields}
-        iconFieldName="ServerRelativeUrl"
-        compact={true}
-        selectionMode={SelectionMode.single}
-        selection={this._getSelection}
-      />
-      {panel}
-      {
-                this.state.openDialog ?
-                  <DetailsDialog
-                    title = "Confirm"
-                    subText = "Do you really want to delete?"
-                    open={this.state.openDialog}
-                    onClose={this.closeDialog.bind(this)}
-                    agendaName ={this.state.selectedAgendaTitle}
-                    onDelete={this.deleteAgenda.bind(this)}
-                  >
-                  </DetailsDialog>
-                  : <></>
-              }
+        <ListView
+          items={this.state.items}
+          viewFields={viewFields}
+          iconFieldName="ServerRelativeUrl"
+          compact={true}
+          selectionMode={SelectionMode.single}
+          selection={this.getSelection}
+        />
+        {panel}
+        {this.state.openDialog ? (
+          <DetailsDialog
+            title="Confirm"
+            subText="Do you really want to delete?"
+            open={this.state.openDialog}
+            onClose={this.closeDialog.bind(this)}
+            agendaName={this.state.selectedAgendaTitle}
+            onDelete={this.deleteAgenda.bind(this)}
+          ></DetailsDialog>
+        ) : (
+          <></>
+        )}
       </React.Fragment>
     );
   }
 
 
-
+ /**
+   * @Methods
+   * @memberof AgendaList
+   */
 
   public closeDialog() {
-    this.setState({ openDialog: false })
+    this.setState({ openDialog: false });
   }
 
-  openDialog = ()=>{
+  openDialog = () => {
     this.setState({ openDialog: true });
-
-  }
+  };
 
   private async getItems() {
     if (this.props.meetingID) {
@@ -270,193 +232,121 @@ export default class AgendaList extends React.Component<
     }
   }
 
-  private _ecbOnDatachange() {
-    //alert("Data changed");
-  }
-
- _getSelection = (items: any[]) => {
-
-  if(items.length > 0){
-  //console.log("Selected items:", items);
-  let itemID =  items[0].ID;
-  //console.log("Item is is" + itemID);
-  this.setState({
-    selectedAgendaID:itemID,
-    selectedAgendaTitle : items[0].Title
-  });
-
-  }
-
-  }
-
-
-
-  handleClick = (actionType: string, seletedfile: any, event) => {
-
-    // alert(actionType);
-
-
-      if (actionType === 'edit') {
-          this.handeEditAction(actionType);
-
-
-        //alert("edit");
-
-          // window.open(
-          //     window.location.protocol + "//" + window.location.host + seletedfile.ServerRelativeUrl + "?web=1",
-          //     '_blank'
-          // );
-      }
-      else if (actionType === 'copy') {
-
-
-
-        //alert("copy");
-        // window.open(
-          //     window.location.protocol + "//" + window.location.host + seletedfile.ServerRelativeUrl + "?web=0",
-          //     '_blank'
-          // );
-      }
-      else if (actionType === 'delete') {
-        this.openDialog();
-        //alert("Calling delete");
-        //this.deleteConfirm();
-        //alert("delete");
-          // let list = sp.web.lists.getByTitle("Policies");
-          // await list.items.getById(seletedfile["ListItemAllFields.ID"]).delete();
-          // this.props.ondatachange();
-      }
-
+  getSelection = (items: any[]) => {
+    if (items.length > 0) {
+      //console.log("Selected items:", items);
+      let itemID = items[0].ID;
+      //console.log("Item is is" + itemID);
+      this.setState({
+        selectedAgendaID: itemID,
+        selectedAgendaTitle: items[0].Title,
+      });
     }
+  };
 
-private async handeEditAction(actionType){
-  await this.getEditItem();
-  this.setState({
-    panelIsOpen: true,
-    currentAction: actionType,
-  });
-}
 
-  private getEditPanel(){
+
+  private getEditPanel() {
     return (
       <Panel
-      isOpen={this.state.panelIsOpen}
-      onDismiss={() => this._onDismissPanel()}
-      type={this.state.panelType}
-      customWidth={
-        this.state.panelType === PanelType.custom ||
-        this.state.panelType === PanelType.customNear
-          ? "888px"
-          : undefined
-      }
-      closeButtonAriaLabel="Close"
-      headerText="Edit Agenda"
-    >
-      <Stack horizontal tokens={stackTokens} styles={stackStyles}>
-        <Stack {...columnProps}>
-          <TextField
-            className={styles.dialogControls}
-            name="title"
-            label="Title"
-            id="title"
-            required
-            value={this.state.title}
-            onChange={this.handleInputChange}
-          />
-          <Dropdown
-            className={styles.dialogControls}
-            id="rank"
-            placeholder="Please select"
-            label="Rank"
-            options={rankOptions}
-            styles={dropdownStyles}
-            selectedKey={this.state.rank}
-            onChange={this.handleInputChange}
-          />
-          <Dropdown
-            className={styles.dialogControls}
-            id="duration"
-            placeholder="Please select"
-            label="Duration"
-            options={durationOptions}
-            styles={dropdownStyles}
-            selectedKey={this.state.duration}
-            onChange={this.handleInputChange}
-          />
-          <TextField
-            className={styles.dialogControls}
-            name="Topic"
-            label="Topic"
-            id="topic"
-            required
-            value={this.state.topic}
-            onChange={this.handleInputChange}
-          />
+        isOpen={this.state.panelIsOpen}
+        onDismiss={() => this._onDismissPanel()}
+        type={this.state.panelType}
+        customWidth={
+          this.state.panelType === PanelType.custom ||
+          this.state.panelType === PanelType.customNear
+            ? "888px"
+            : undefined
+        }
+        closeButtonAriaLabel="Close"
+        headerText="Edit Agenda"
+      >
+        <Stack horizontal tokens={stackTokens} styles={stackStyles}>
+          <Stack {...columnProps}>
+            <TextField
+              className={styles.dialogControls}
+              name="title"
+              label="Title"
+              id="title"
+              required
+              value={this.state.title}
+              onChange={this.onHandleInputChange}
+            />
+            <Dropdown
+              className={styles.dialogControls}
+              id="rank"
+              placeholder="Please select"
+              label="Rank"
+              options={rankOptions}
+              styles={dropdownStyles}
+              selectedKey={this.state.rank}
+              onChange={this.onHandleInputChange}
+            />
+            <Dropdown
+              className={styles.dialogControls}
+              id="duration"
+              placeholder="Please select"
+              label="Duration"
+              options={durationOptions}
+              styles={dropdownStyles}
+              selectedKey={this.state.duration}
+              onChange={this.onHandleInputChange}
+            />
+            <TextField
+              className={styles.dialogControls}
+              name="Topic"
+              label="Topic"
+              id="topic"
+              required
+              value={this.state.topic}
+              onChange={this.onHandleInputChange}
+            />
 
-          <Label>Content</Label>
-          <RichText
-            className={styles.dialogControls}
-            value={this.state.content}
-            onChange={this._onTextChange}
+            <Label>Content</Label>
+            <RichText
+              className={styles.dialogControls}
+              value={this.state.content}
+              onChange={this._onTextChange}
+            />
+          </Stack>
+        </Stack>
+        <Stack horizontal tokens={stackTokens} styles={stackStyles}>
+          <PrimaryButton
+            text="Save"
+            onClick={this.handleUpdateSubmit}
+            allowDisabledFocus
+            className={styles.panelButton}
+          />
+          <DefaultButton
+            text="Cancel"
+            onClick={() => this._onDismissPanel()}
+            allowDisabledFocus
+            className={styles.panelButton}
           />
         </Stack>
-      </Stack>
-      <Stack horizontal tokens={stackTokens} styles={stackStyles}>
-        <PrimaryButton
-          text="Save"
-          onClick={this.handleUpdateSubmit}
-          allowDisabledFocus
-          className={styles.panelButton}
-        />
-        <DefaultButton
-          text="Cancel"
-          onClick={() => this._onDismissPanel()}
-          allowDisabledFocus
-          className={styles.panelButton}
-        />
-      </Stack>
-    </Panel>
-
-    )
-
+      </Panel>
+    );
   }
+
   private async getEditItem() {
-
-
     if (this.state.selectedAgendaID != null) {
-
-      const agenda: IAgenda =  await this.spService.getAgendaByID(this.props.agendaSiteUrl,escape(this.props.list),this.state.selectedAgendaID);
+      const agenda: IAgenda = await this.spService.getAgendaByID(
+        this.props.agendaSiteUrl,
+        escape(this.props.list),
+        this.state.selectedAgendaID
+      );
 
       this.setState({
         title: agenda.Title,
         topic: agenda.MeetingAppTopic,
-        rank : agenda.MeetingAppRank,
-        content:agenda.MeetingAppContent,
-        duration : agenda.MeetingAppDuration
-       });
+        rank: agenda.MeetingAppRank,
+        content: agenda.MeetingAppContent,
+        duration: agenda.MeetingAppDuration,
+      });
     }
   }
 
-
-  private _onDismissPanel() {
-    this.setState({
-      panelIsOpen: false,
-    });
-  }
-
   handleUpdateSubmit = () => {
-    // console.log("Starting save");
-    // console.log(
-    //   "Saving values are title: " +
-    //     this.state.title +
-    //     "- duration: " +
-    //     this.state.duration +
-    //     "-topic: " +
-    //     this.state.topic +
-    //     " and rank: " +
-    //     this.state.rank
-    // );
-
     const updateAgenda: IAgenda = {
       Title: this.state.title,
       MeetingAppDuration: this.state.duration,
@@ -469,59 +359,109 @@ private async handeEditAction(actionType){
     this.updateAgenda(updateAgenda);
   };
 
-
   private async updateAgenda(addAgenda: IAgenda) {
-    await this.spService.updateAgenda(this.props.agendaSiteUrl,escape(this.props.list),this.state.selectedAgendaID,addAgenda);
+    await this.spService.updateAgenda(
+      this.props.agendaSiteUrl,
+      escape(this.props.list),
+      this.state.selectedAgendaID,
+      addAgenda
+    );
     await this.getItems();
-    // await this.spService.addAgenda(
-    //   this.props.agendaSiteUrl,
-    //   "MApp-Agenda",
-    //   addAgenda
-    // );
-    // this._onDismissPanel();
   }
 
-  private async deleteAgenda(){
-
-    await this.spService.deleteAgenda(this.props.agendaSiteUrl,escape(this.props.list),this.state.selectedAgendaID);
+  private async deleteAgenda() {
+    await this.spService.deleteAgenda(
+      this.props.agendaSiteUrl,
+      escape(this.props.list),
+      this.state.selectedAgendaID
+    );
 
     this.closeDialog();
-     await this.getItems();
+    await this.getItems();
   }
 
+  handleClick = (actionType: string, seletedfile: any, event) => {
+    // alert(actionType);
 
-  private handleInputChange(event) {
-    const target = event.target;
-    const value = target.type === "checkbox" ? target.checked : target.value;
-    //const name = target.name;
-    const id = target.id;
-    //console.log("Names is " + name);
-    console.log("ID is " + id);
+    if (actionType === "edit") {
+      this.onHandeEditAction(actionType);
 
-    if (id == "title") {
-      this.setState({
-        title: value,
-      });
-    } else if (id == "topic") {
-      this.setState({
-        topic: value,
-      });
-    } else if (id == "duration") {
-      this.setState({
-        duration: value,
-      });
-    } else if (id == "rank") {
-      this.setState({
-        rank: value,
-      });
+      //alert("edit");
+
+      // window.open(
+      //     window.location.protocol + "//" + window.location.host + seletedfile.ServerRelativeUrl + "?web=1",
+      //     '_blank'
+      // );
+    } else if (actionType === "copy") {
+      //alert("copy");
+      // window.open(
+      //     window.location.protocol + "//" + window.location.host + seletedfile.ServerRelativeUrl + "?web=0",
+      //     '_blank'
+      // );
+    } else if (actionType === "delete") {
+      this.openDialog();
+      //alert("Calling delete");
+      //this.deleteConfirm();
+      //alert("delete");
+      // let list = sp.web.lists.getByTitle("Policies");
+      // await list.items.getById(seletedfile["ListItemAllFields.ID"]).delete();
+      // this.props.ondatachange();
     }
-  }
-
-  private _onTextChange = (newText: string) => {
-    this.setState({ content: newText });
-    return newText;
   };
 
 
 
+   /**
+   * @Events
+   * @memberof AgendaList
+   */
+
+    private onHandleInputChange(event) {
+      const target = event.target;
+      const value = target.type === "checkbox" ? target.checked : target.value;
+      const id = target.id;
+
+
+      if (id == "title") {
+        this.setState({
+          title: value,
+        });
+      } else if (id == "topic") {
+        this.setState({
+          topic: value,
+        });
+      } else if (id == "duration") {
+        this.setState({
+          duration: value,
+        });
+      } else if (id == "rank") {
+        this.setState({
+          rank: value,
+        });
+      }
+    }
+
+    private _onTextChange = (newText: string) => {
+      this.setState({ content: newText });
+      return newText;
+    };
+
+    private _onDismissPanel() {
+      this.setState({
+        panelIsOpen: false,
+      });
+    }
+
+    private _ecbOnDatachange() {
+      //alert("Data changed");
+    }
+
+
+    private async onHandeEditAction(actionType) {
+      await this.getEditItem();
+      this.setState({
+        panelIsOpen: true,
+        currentAction: actionType,
+      });
+    }
 }
